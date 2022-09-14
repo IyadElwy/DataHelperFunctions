@@ -7,7 +7,7 @@ import seaborn as sns
 import random
 import os
 
-from utils import load_and_normalize_image
+from utils import load_and_prep_image
 
 ###############################################################################################
 from matplotlib import image as mpimg
@@ -156,8 +156,8 @@ def plot_loss_curves(history):
 ###############################################################################################
 
 
-def pred_and_plot(model, file_path, image_shape, class_names):
-    img = load_and_normalize_image(file_path, image_shape)
+def pred_and_plot(model, file_path, image_shape, scale, class_names):
+    img = load_and_prep_image(file_path, image_shape, scale)
     pred = model.predict(tf.expand_dims(img, axis=0))
     pred_class = class_names[int(tf.round(pred))]
 
@@ -165,3 +165,51 @@ def pred_and_plot(model, file_path, image_shape, class_names):
     plt.imshow(img)
     plt.title(f'Prediction: {pred_class}')
     plt.axis(False)
+
+
+###############################################################################################
+
+
+def compare_historys(original_history, new_history, initial_epochs=5):
+    """
+    Compares two TensorFlow model History objects.
+
+    Args:
+      original_history: History object from original model (before new_history)
+      new_history: History object from continued model training (after original_history)
+      initial_epochs: Number of epochs in original_history (new_history plot starts from here) 
+    """
+
+    # Get original history measurements
+    acc = original_history.history["accuracy"]
+    loss = original_history.history["loss"]
+
+    val_acc = original_history.history["val_accuracy"]
+    val_loss = original_history.history["val_loss"]
+
+    # Combine original history with new history
+    total_acc = acc + new_history.history["accuracy"]
+    total_loss = loss + new_history.history["loss"]
+
+    total_val_acc = val_acc + new_history.history["val_accuracy"]
+    total_val_loss = val_loss + new_history.history["val_loss"]
+
+    # Make plots
+    plt.figure(figsize=(8, 8))
+    plt.subplot(2, 1, 1)
+    plt.plot(total_acc, label='Training Accuracy')
+    plt.plot(total_val_acc, label='Validation Accuracy')
+    plt.plot([initial_epochs - 1, initial_epochs - 1],
+             plt.ylim(), label='Start Fine Tuning')  # reshift plot around epochs
+    plt.legend(loc='lower right')
+    plt.title('Training and Validation Accuracy')
+
+    plt.subplot(2, 1, 2)
+    plt.plot(total_loss, label='Training Loss')
+    plt.plot(total_val_loss, label='Validation Loss')
+    plt.plot([initial_epochs - 1, initial_epochs - 1],
+             plt.ylim(), label='Start Fine Tuning')  # reshift plot around epochs
+    plt.legend(loc='upper right')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('epoch')
+    plt.show()
