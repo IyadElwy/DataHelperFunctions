@@ -7,7 +7,7 @@ import seaborn as sns
 import random
 import os
 
-from utils import load_and_prep_image
+from .utils import load_and_prep_image
 
 ###############################################################################################
 from matplotlib import image as mpimg
