@@ -170,7 +170,7 @@ def pred_and_plot(model, file_path, image_shape, scale, class_names):
 ###############################################################################################
 
 
-def compare_historys(original_history, new_history, initial_epochs=5):
+def compare_histories(original_history, new_history, initial_epochs=5):
     """
     Compares two TensorFlow model History objects.
 
@@ -195,7 +195,7 @@ def compare_historys(original_history, new_history, initial_epochs=5):
     total_val_loss = val_loss + new_history.history["val_loss"]
 
     # Make plots
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(20, 12))
     plt.subplot(2, 1, 1)
     plt.plot(total_acc, label='Training Accuracy')
     plt.plot(total_val_acc, label='Validation Accuracy')
